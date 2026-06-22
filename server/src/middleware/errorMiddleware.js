@@ -4,6 +4,6 @@ export function errorMiddleware(error, req, res, next) {
   return res.status(statusCode).json({
     success: false,
     message: error.message || 'Internal server error',
-    errors: process.env.NODE_ENV === 'production' ? null : error.stack
+    errors: error.errors || (process.env.NODE_ENV === 'production' ? null : error.stack)
   });
 }
