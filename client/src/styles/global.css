@@ -1,0 +1,248 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #172033;
+  background: #f4f7fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-secondary: #0f172a;
+  --color-muted: #64748b;
+  --color-surface: #ffffff;
+  --color-border: #dbe3ef;
+  --color-soft: #eaf1ff;
+  --shadow-card: 0 20px 60px rgba(15, 23, 42, 0.08);
+  --radius-lg: 24px;
+  --radius-md: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.18), transparent 28rem),
+    #f4f7fb;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(219, 227, 239, 0.8);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(14px);
+}
+
+.navbar {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.navbar-logo {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--color-secondary);
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.navbar-links a.active {
+  color: var(--color-primary);
+}
+
+.main-content {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 28px;
+  align-items: stretch;
+}
+
+.hero-content,
+.hero-panel,
+.page-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.hero-content {
+  padding: 56px;
+}
+
+.hero-panel {
+  padding: 36px;
+}
+
+.hero-panel h2 {
+  margin-top: 0;
+}
+
+.hero-panel ul {
+  padding-left: 20px;
+  color: var(--color-muted);
+  line-height: 1.8;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--color-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+
+h1 {
+  margin: 0 0 18px;
+  color: var(--color-secondary);
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+h2 {
+  color: var(--color-secondary);
+  letter-spacing: -0.04em;
+}
+
+.hero-text {
+  max-width: 680px;
+  color: var(--color-muted);
+  font-size: 1.12rem;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--color-primary-dark);
+}
+
+.button-secondary {
+  background: #ffffff;
+  color: var(--color-primary);
+}
+
+.button-secondary:hover {
+  background: var(--color-soft);
+}
+
+.button-small {
+  min-height: 36px;
+  padding: 0 16px;
+  color: #ffffff !important;
+}
+
+.status-card,
+.info-box {
+  margin-top: 28px;
+  display: grid;
+  gap: 6px;
+  padding: 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: #f8fbff;
+  color: var(--color-muted);
+}
+
+.status-card strong,
+.info-box strong {
+  color: var(--color-secondary);
+}
+
+.info-box span {
+  color: var(--color-muted);
+}
+
+.page-card {
+  padding: 44px;
+  max-width: 860px;
+}
+
+.page-card p {
+  color: var(--color-muted);
+  line-height: 1.7;
+}
+
+@media (max-width: 860px) {
+  .navbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 16px 0;
+  }
+
+  .navbar-links {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-content,
+  .hero-panel,
+  .page-card {
+    padding: 28px;
+  }
+}
