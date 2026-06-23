@@ -33,3 +33,75 @@ export const loginSchema = z.object({
     .string()
     .min(1, 'Password is required')
 });
+
+export const createTopicSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(3, 'Title must be at least 3 characters long')
+    .max(160, 'Title must be maximum 160 characters long'),
+
+  originalText: z
+    .string()
+    .trim()
+    .optional()
+    .nullable(),
+
+  ocrText: z
+    .string()
+    .trim()
+    .optional()
+    .nullable(),
+
+  finalText: z
+    .string()
+    .trim()
+    .optional()
+    .nullable(),
+
+  language: z
+    .enum(['BG', 'EN'])
+    .default('BG')
+});
+
+export const updateTopicSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(3, 'Title must be at least 3 characters long')
+    .max(160, 'Title must be maximum 160 characters long')
+    .optional(),
+
+  originalText: z
+    .string()
+    .trim()
+    .optional()
+    .nullable(),
+
+  ocrText: z
+    .string()
+    .trim()
+    .optional()
+    .nullable(),
+
+  finalText: z
+    .string()
+    .trim()
+    .optional()
+    .nullable(),
+
+  language: z
+    .enum(['BG', 'EN'])
+    .optional(),
+
+  status: z
+    .enum(['DRAFT', 'GENERATED', 'ARCHIVED'])
+    .optional()
+});
+
+export const topicIdSchema = z.object({
+  id: z.coerce
+    .number()
+    .int('Topic id must be an integer')
+    .positive('Topic id must be positive')
+});
