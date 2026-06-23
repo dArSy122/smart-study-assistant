@@ -1,0 +1,340 @@
+export const resources = {
+  bg: {
+    translation: {
+      app: {
+        name: 'Smart Study Assistant',
+        shortName: 'SSA'
+      },
+      nav: {
+        dashboard: 'Табло',
+        createTopic: 'Създай тема',
+        statistics: 'Статистика',
+        admin: 'Админ',
+        settings: 'Настройки',
+        login: 'Вход'
+      },
+      common: {
+        bg: 'БГ',
+        en: 'EN',
+        bulgarian: 'Български',
+        english: 'Английски',
+        backendStatus: 'Backend статус',
+        checkingBackend: 'Проверка на backend връзката...',
+        backendNotReachable: 'Backend не е достъпен',
+        getStarted: 'Започни',
+        login: 'Вход',
+        register: 'Регистрация',
+        createAccount: 'Създай акаунт',
+        createTopic: 'Създай тема',
+        saveDraft: 'Запази чернова',
+        startQuiz: 'Започни тест',
+        submitQuiz: 'Предай тест',
+        backToHome: 'Към началната страница',
+        dark: 'Тъмна',
+        light: 'Светла',
+        theme: 'Тема',
+        language: 'Език',
+        preferredLanguage: 'Предпочитан език',
+        email: 'Имейл',
+        password: 'Парола',
+        name: 'Име',
+        title: 'Заглавие',
+        topicLanguage: 'Език на темата',
+        studyText: 'Учебен текст'
+      },
+      landing: {
+        eyebrow: 'Университетски практически проект',
+        title: 'Smart Study Assistant',
+        description:
+          'Създавай учебни теми, извличай текст от снимки, генерирай AI материали, решавай тестове и следи напредъка си.',
+        includedModules: 'Включени модули',
+        modules: [
+          'JWT вход с роли STUDENT и ADMIN',
+          'OCR от качени снимки с учебен материал',
+          'AI обобщения, важни понятия, flashcards и тест',
+          'Статистика, activity logs и admin panel',
+          'Интерфейс на български и английски език',
+          'PWA и responsive дизайн'
+        ],
+        stats: {
+          rolesLabel: 'Роли',
+          rolesValue: '2',
+          rolesHelper: 'STUDENT и ADMIN',
+          databaseLabel: 'Основна база',
+          databaseValue: 'MySQL',
+          databaseHelper: 'Управлява се чрез Prisma',
+          aiLabel: 'AI режим',
+          aiValue: 'API + fallback',
+          aiHelper: 'Работи и без API ключ',
+          frontendLabel: 'Frontend',
+          frontendValue: 'PWA ready',
+          frontendHelper: 'Подходящ за мобилен екран'
+        }
+      },
+      auth: {
+        loginEyebrow: 'Автентикация',
+        loginTitle: 'Вход',
+        loginDescription:
+          'Формата ще се свърже с backend login endpoint в следващия frontend auth етап.',
+        registerEyebrow: 'Автентикация',
+        registerTitle: 'Регистрация',
+        registerDescription: 'Новите потребители се създават като STUDENT акаунти.',
+        testAccounts: 'Тестови акаунти',
+        student: 'Студент',
+        admin: 'Админ',
+        yourName: 'Твоето име',
+        emailPlaceholder: 'you@example.com',
+        passwordPlaceholder: 'Минимум 6 символа'
+      },
+      student: {
+        dashboardEyebrow: 'Студентска зона',
+        dashboardTitle: 'Студентско табло',
+        dashboardDescription: 'Преглед на теми, тестове и учебен напредък.',
+        topics: 'Теми',
+        topicsHelper: 'Създадени учебни теми',
+        generated: 'Генерирани',
+        generatedHelper: 'AI учебни материали',
+        quizAttempts: 'Тестове',
+        quizAttemptsHelper: 'Записани опити',
+        averageScore: 'Среден резултат',
+        averageScoreHelper: 'На база тестове',
+        recentTopics: 'Последни теми',
+        recentTopicsEmpty: 'Темите ще се покажат тук след свързване на topics модула.',
+        createTopicEyebrow: 'Учебни теми',
+        createTopicTitle: 'Създай тема',
+        createTopicDescription:
+          'Екранът ще поддържа ръчно въвеждане, качване на изображение и OCR извличане.',
+        titlePlaceholder: 'Пример: Изкуствен интелект',
+        studyTextPlaceholder: 'Постави или въведи учебния текст тук...',
+        topicDetailsEyebrow: 'Учебни теми',
+        topicDetailsTitle: 'Детайли за тема',
+        topicDetailsDescription: 'AI генерираните материали ще се показват тук.',
+        finalText: 'Финален текст',
+        finalTextEmpty: 'Редактираният учебен текст ще се покаже тук след свързване на модула.',
+        aiSummary: 'AI обобщение',
+        aiSummaryEmpty: 'Тук ще се показват summary, key terms, study plan и flashcards.',
+        quizEyebrow: 'Quiz режим',
+        quizTitle: 'Тест',
+        quizDescription: 'Студентът ще решава генерирани въпроси и ще записва резултат.',
+        questionPreview: 'Тук ще се покаже примерен въпрос.',
+        answer1: 'Отговор 1',
+        answer2: 'Отговор 2',
+        answer3: 'Отговор 3',
+        answer4: 'Отговор 4',
+        statsEyebrow: 'Напредък',
+        statsTitle: 'Статистика',
+        statsDescription: 'Графиките ще показват активност, тестове и среден резултат.',
+        completedQuizzes: 'Завършени тестове',
+        completedQuizzesHelper: 'Общ брой опити',
+        generatedTopics: 'Генерирани теми',
+        generatedTopicsHelper: 'С AI материали',
+        archivedTopics: 'Архивирани теми',
+        archivedTopicsHelper: 'Скрити от активния списък',
+        chartsArea: 'Зона за графики',
+        chartsPlaceholder: 'Тук ще добавим Chart.js или Recharts визуализация.'
+      },
+      admin: {
+        eyebrow: 'Админ панел',
+        title: 'Админ табло',
+        description: 'ADMIN потребителите ще управляват потребители, теми, роли и activity logs.',
+        users: 'Потребители',
+        usersHelper: 'Регистрирани акаунти',
+        topics: 'Теми',
+        topicsHelper: 'Всички учебни теми',
+        activityLogs: 'Activity logs',
+        activityLogsHelper: 'Проследени действия',
+        admins: 'Админи',
+        adminsHelper: 'Seed admin акаунт',
+        permissions: 'Админ права',
+        permissionsDescription:
+          'Тук ще се показват потребители, теми и activity logs след свързване на admin endpoints.'
+      },
+      settings: {
+        eyebrow: 'Предпочитания',
+        title: 'Настройки',
+        description: 'Езикът, темата и известията се управляват от тази страница.',
+        themeDescription: 'Превключи между светъл и тъмен режим.',
+        languageDescription: 'Избери език на интерфейса.'
+      },
+      offline: {
+        eyebrow: 'PWA',
+        title: 'Offline',
+        description: 'Нямаш интернет връзка. PWA модулът ще показва тази страница при липса на мрежа.'
+      },
+      notFound: {
+        eyebrow: '404',
+        title: 'Страницата не е намерена',
+        description: 'Страницата, която търсиш, не съществува.'
+      }
+    }
+  },
+  en: {
+    translation: {
+      app: {
+        name: 'Smart Study Assistant',
+        shortName: 'SSA'
+      },
+      nav: {
+        dashboard: 'Dashboard',
+        createTopic: 'Create Topic',
+        statistics: 'Statistics',
+        admin: 'Admin',
+        settings: 'Settings',
+        login: 'Login'
+      },
+      common: {
+        bg: 'BG',
+        en: 'EN',
+        bulgarian: 'Bulgarian',
+        english: 'English',
+        backendStatus: 'Backend status',
+        checkingBackend: 'Checking backend connection...',
+        backendNotReachable: 'Backend is not reachable',
+        getStarted: 'Get started',
+        login: 'Login',
+        register: 'Register',
+        createAccount: 'Create account',
+        createTopic: 'Create topic',
+        saveDraft: 'Save draft',
+        startQuiz: 'Start quiz',
+        submitQuiz: 'Submit quiz',
+        backToHome: 'Back to home',
+        dark: 'Dark',
+        light: 'Light',
+        theme: 'Theme',
+        language: 'Language',
+        preferredLanguage: 'Preferred language',
+        email: 'Email',
+        password: 'Password',
+        name: 'Name',
+        title: 'Title',
+        topicLanguage: 'Topic language',
+        studyText: 'Study text'
+      },
+      landing: {
+        eyebrow: 'University practical project',
+        title: 'Smart Study Assistant',
+        description:
+          'Create study topics, extract text from images, generate AI materials, solve quizzes and track your learning progress.',
+        includedModules: 'Included modules',
+        modules: [
+          'JWT authentication with STUDENT and ADMIN roles',
+          'OCR from uploaded study images',
+          'AI summaries, key terms, flashcards and quiz',
+          'Statistics, activity logs and admin panel',
+          'Bulgarian and English interface',
+          'PWA and responsive design'
+        ],
+        stats: {
+          rolesLabel: 'Roles',
+          rolesValue: '2',
+          rolesHelper: 'STUDENT and ADMIN',
+          databaseLabel: 'Main database',
+          databaseValue: 'MySQL',
+          databaseHelper: 'Managed by Prisma',
+          aiLabel: 'AI mode',
+          aiValue: 'API + fallback',
+          aiHelper: 'Works without API key',
+          frontendLabel: 'Frontend',
+          frontendValue: 'PWA ready',
+          frontendHelper: 'Mobile friendly layout'
+        }
+      },
+      auth: {
+        loginEyebrow: 'Authentication',
+        loginTitle: 'Login',
+        loginDescription:
+          'This form will connect to the backend login endpoint in the next frontend auth stage.',
+        registerEyebrow: 'Authentication',
+        registerTitle: 'Register',
+        registerDescription: 'New users will be created as STUDENT accounts.',
+        testAccounts: 'Test accounts',
+        student: 'Student',
+        admin: 'Admin',
+        yourName: 'Your name',
+        emailPlaceholder: 'you@example.com',
+        passwordPlaceholder: 'Minimum 6 characters'
+      },
+      student: {
+        dashboardEyebrow: 'Student area',
+        dashboardTitle: 'Student Dashboard',
+        dashboardDescription: 'Overview of topics, quiz activity and learning progress.',
+        topics: 'Topics',
+        topicsHelper: 'Created study topics',
+        generated: 'Generated',
+        generatedHelper: 'AI generated materials',
+        quizAttempts: 'Quiz attempts',
+        quizAttemptsHelper: 'Saved test attempts',
+        averageScore: 'Average score',
+        averageScoreHelper: 'Based on quiz results',
+        recentTopics: 'Recent topics',
+        recentTopicsEmpty: 'Student topics will appear here after the topics module is connected.',
+        createTopicEyebrow: 'Study topics',
+        createTopicTitle: 'Create Topic',
+        createTopicDescription:
+          'This screen will support manual text input, image upload and OCR extraction.',
+        titlePlaceholder: 'Example: Artificial Intelligence',
+        studyTextPlaceholder: 'Paste or type your study text here...',
+        topicDetailsEyebrow: 'Study topics',
+        topicDetailsTitle: 'Topic Details',
+        topicDetailsDescription: 'AI generated materials will be displayed here.',
+        finalText: 'Final text',
+        finalTextEmpty: 'The final edited study text will appear here after the topic module is connected.',
+        aiSummary: 'AI summary',
+        aiSummaryEmpty: 'Summary, key terms, study plan and flashcards will appear here.',
+        quizEyebrow: 'Quiz mode',
+        quizTitle: 'Quiz',
+        quizDescription: 'Students will solve generated questions and save their score.',
+        questionPreview: 'Question preview will appear here.',
+        answer1: 'Answer option 1',
+        answer2: 'Answer option 2',
+        answer3: 'Answer option 3',
+        answer4: 'Answer option 4',
+        statsEyebrow: 'Progress',
+        statsTitle: 'Statistics',
+        statsDescription: 'Charts will show study activity, quiz attempts and average score.',
+        completedQuizzes: 'Completed quizzes',
+        completedQuizzesHelper: 'Total attempts',
+        generatedTopics: 'Generated topics',
+        generatedTopicsHelper: 'With AI materials',
+        archivedTopics: 'Archived topics',
+        archivedTopicsHelper: 'Hidden from active list',
+        chartsArea: 'Charts area',
+        chartsPlaceholder: 'Chart.js or Recharts visualization will be added here.'
+      },
+      admin: {
+        eyebrow: 'Admin panel',
+        title: 'Admin Dashboard',
+        description: 'Admin users will manage users, topics, roles and activity logs.',
+        users: 'Users',
+        usersHelper: 'Registered accounts',
+        topics: 'Topics',
+        topicsHelper: 'All study topics',
+        activityLogs: 'Activity logs',
+        activityLogsHelper: 'Tracked system actions',
+        admins: 'Admins',
+        adminsHelper: 'Seed admin account',
+        permissions: 'Admin permissions',
+        permissionsDescription:
+          'This section will show users, topics and activity logs after admin endpoints are connected.'
+      },
+      settings: {
+        eyebrow: 'Preferences',
+        title: 'Settings',
+        description: 'Language, theme and notification settings will be managed from this page.',
+        themeDescription: 'Switch between light and dark mode.',
+        languageDescription: 'Choose the interface language.'
+      },
+      offline: {
+        eyebrow: 'PWA',
+        title: 'Offline',
+        description: 'You are offline. The PWA module will show this page when the network is unavailable.'
+      },
+      notFound: {
+        eyebrow: '404',
+        title: 'Page not found',
+        description: 'The page you are looking for does not exist.'
+      }
+    }
+  }
+};

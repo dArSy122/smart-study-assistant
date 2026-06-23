@@ -1,30 +1,39 @@
+import { useTranslation } from 'react-i18next';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import PageHeader from '../../components/ui/PageHeader.jsx';
 import StatCard from '../../components/ui/StatCard.jsx';
 
 export default function StudentDashboardPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="content-stack">
       <PageHeader
-        eyebrow="Student area"
-        title="Student Dashboard"
-        description="Overview of topics, quiz activity and learning progress."
-        actions={<Button to="/topics/create">Create topic</Button>}
+        eyebrow={t('student.dashboardEyebrow')}
+        title={t('student.dashboardTitle')}
+        description={t('student.dashboardDescription')}
+        actions={<Button to="/topics/create">{t('common.createTopic')}</Button>}
       />
 
       <section className="stats-grid">
-        <StatCard label="Topics" value="0" helper="Created study topics" />
-        <StatCard label="Generated" value="0" helper="AI generated materials" />
-        <StatCard label="Quiz attempts" value="0" helper="Saved test attempts" />
-        <StatCard label="Average score" value="0%" helper="Based on quiz results" />
+        <StatCard label={t('student.topics')} value="0" helper={t('student.topicsHelper')} />
+        <StatCard label={t('student.generated')} value="0" helper={t('student.generatedHelper')} />
+        <StatCard
+          label={t('student.quizAttempts')}
+          value="0"
+          helper={t('student.quizAttemptsHelper')}
+        />
+        <StatCard
+          label={t('student.averageScore')}
+          value="0%"
+          helper={t('student.averageScoreHelper')}
+        />
       </section>
 
       <Card>
-        <h2>Recent topics</h2>
-        <p className="muted-text">
-          Student topics will appear here after the topics module is connected.
-        </p>
+        <h2>{t('student.recentTopics')}</h2>
+        <p className="muted-text">{t('student.recentTopicsEmpty')}</p>
       </Card>
     </div>
   );

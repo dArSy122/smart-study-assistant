@@ -1,14 +1,20 @@
-import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import Button from '../components/ui/Button.jsx';
+import Card from '../components/ui/Card.jsx';
+import PageHeader from '../components/ui/PageHeader.jsx';
 
 export default function NotFoundPage() {
+  const { t } = useTranslation();
+
   return (
-    <section className="page-card">
-      <p className="eyebrow">404</p>
-      <h1>Page not found</h1>
-      <p>The page you are looking for does not exist.</p>
-      <Link to="/" className="button">
-        Back to home
-      </Link>
-    </section>
+    <Card className="narrow-card">
+      <PageHeader
+        eyebrow={t('notFound.eyebrow')}
+        title={t('notFound.title')}
+        description={t('notFound.description')}
+      />
+
+      <Button to="/">{t('common.backToHome')}</Button>
+    </Card>
   );
 }

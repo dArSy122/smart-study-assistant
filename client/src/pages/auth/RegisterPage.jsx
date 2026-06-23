@@ -1,31 +1,44 @@
+import { useTranslation } from 'react-i18next';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import FormField from '../../components/ui/FormField.jsx';
 import PageHeader from '../../components/ui/PageHeader.jsx';
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
+
   return (
     <Card className="narrow-card">
       <PageHeader
-        eyebrow="Authentication"
-        title="Register"
-        description="New users will be created as STUDENT accounts."
+        eyebrow={t('auth.registerEyebrow')}
+        title={t('auth.registerTitle')}
+        description={t('auth.registerDescription')}
       />
 
       <form className="form-stack">
-        <FormField label="Name" name="name" placeholder="Your name" />
-        <FormField label="Email" name="email" type="email" placeholder="you@example.com" />
-        <FormField label="Password" name="password" type="password" placeholder="Minimum 6 characters" />
+        <FormField label={t('common.name')} name="name" placeholder={t('auth.yourName')} />
+        <FormField
+          label={t('common.email')}
+          name="email"
+          type="email"
+          placeholder={t('auth.emailPlaceholder')}
+        />
+        <FormField
+          label={t('common.password')}
+          name="password"
+          type="password"
+          placeholder={t('auth.passwordPlaceholder')}
+        />
 
         <label className="form-field" htmlFor="languagePreference">
-          <span>Preferred language</span>
+          <span>{t('common.preferredLanguage')}</span>
           <select id="languagePreference" name="languagePreference" defaultValue="BG">
-            <option value="BG">Bulgarian</option>
-            <option value="EN">English</option>
+            <option value="BG">{t('common.bulgarian')}</option>
+            <option value="EN">{t('common.english')}</option>
           </select>
         </label>
 
-        <Button type="button">Create account</Button>
+        <Button type="button">{t('common.createAccount')}</Button>
       </form>
     </Card>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Badge from '../components/ui/Badge.jsx';
 import Button from '../components/ui/Button.jsx';
 import Card from '../components/ui/Card.jsx';
@@ -6,7 +7,8 @@ import StatCard from '../components/ui/StatCard.jsx';
 import { checkApiHealth } from '../services/apiClient.js';
 
 export default function LandingPage() {
-  const [apiStatus, setApiStatus] = useState('Checking backend connection...');
+  const { t } = useTranslation();
+  const [apiStatus, setApiStatus] = useState(t('common.checkingBackend'));
 
   useEffect(() => {
     let isMounted = true;
@@ -20,7 +22,7 @@ export default function LandingPage() {
         }
       } catch (error) {
         if (isMounted) {
-          setApiStatus('Backend is not reachable');
+          setApiStatus(t('common.backendNotReachable'));
         }
       }
     }
@@ -30,7 +32,9 @@ export default function LandingPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [t]);
+
+  const modules = t('landing.modules', { returnObjects: true });
 
   return (
     <div className="landing-stack">
@@ -42,44 +46,54 @@ export default function LandingPage() {
             <Badge variant="default">React + Express</Badge>
           </div>
 
-          <p className="eyebrow">University practical project</p>
-          <h1>Smart Study Assistant</h1>
-          <p className="hero-text">
-            Create study topics, extract text from images, generate AI materials,
-            solve quizzes and track your learning progress.
-          </p>
+          <p className="eyebrow">{t('landing.eyebrow')}</p>
+          <h1>{t('landing.title')}</h1>
+          <p className="hero-text">{t('landing.description')}</p>
 
           <div className="hero-actions">
-            <Button to="/register">Get started</Button>
+            <Button to="/register">{t('common.getStarted')}</Button>
             <Button to="/login" variant="secondary">
-              Login
+              {t('common.login')}
             </Button>
           </div>
 
           <div className="status-card">
-            <span>Backend status</span>
+            <span>{t('common.backendStatus')}</span>
             <strong>{apiStatus}</strong>
           </div>
         </Card>
 
         <Card className="hero-panel">
-          <h2>Included modules</h2>
+          <h2>{t('landing.includedModules')}</h2>
           <ul>
-            <li>JWT authentication with STUDENT and ADMIN roles</li>
-            <li>OCR from uploaded study images</li>
-            <li>AI summaries, key terms, flashcards and quiz</li>
-            <li>Statistics, activity logs and admin panel</li>
-            <li>Bulgarian and English interface</li>
-            <li>PWA and responsive design</li>
+            {modules.map((module) => (
+              <li key={module}>{module}</li>
+            ))}
           </ul>
         </Card>
       </section>
 
       <section className="stats-grid">
-        <StatCard label="Roles" value="2" helper="STUDENT and ADMIN" />
-        <StatCard label="Main database" value="MySQL" helper="Managed by Prisma" />
-        <StatCard label="AI mode" value="API + fallback" helper="Works without API key" />
-        <StatCard label="Frontend" value="PWA ready" helper="Mobile friendly layout" />
+        <StatCard
+          label={t('landing.stats.rolesLabel')}
+          value={t('landing.stats.rolesValue')}
+          helper={t('landing.stats.rolesHelper')}
+        />
+        <StatCard
+          label={t('landing.stats.databaseLabel')}
+          value={t('landing.stats.databaseValue')}
+          helper={t('landing.stats.databaseHelper')}
+        />
+        <StatCard
+          label={t('landing.stats.aiLabel')}
+          value={t('landing.stats.aiValue')}
+          helper={t('landing.stats.aiHelper')}
+        />
+        <StatCard
+          label={t('landing.stats.frontendLabel')}
+          value={t('landing.stats.frontendValue')}
+          helper={t('landing.stats.frontendHelper')}
+        />
       </section>
     </div>
   );

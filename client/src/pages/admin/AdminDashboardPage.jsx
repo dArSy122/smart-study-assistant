@@ -1,32 +1,33 @@
+import { useTranslation } from 'react-i18next';
 import Badge from '../../components/ui/Badge.jsx';
 import Card from '../../components/ui/Card.jsx';
 import PageHeader from '../../components/ui/PageHeader.jsx';
 import StatCard from '../../components/ui/StatCard.jsx';
 
 export default function AdminDashboardPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="content-stack">
-      <PageHeader
-        eyebrow="Admin panel"
-        title="Admin Dashboard"
-        description="Admin users will manage users, topics, roles and activity logs."
-      />
+      <PageHeader eyebrow={t('admin.eyebrow')} title={t('admin.title')} description={t('admin.description')} />
 
       <section className="stats-grid">
-        <StatCard label="Users" value="0" helper="Registered accounts" />
-        <StatCard label="Topics" value="0" helper="All study topics" />
-        <StatCard label="Activity logs" value="0" helper="Tracked system actions" />
-        <StatCard label="Admins" value="1" helper="Seed admin account" />
+        <StatCard label={t('admin.users')} value="0" helper={t('admin.usersHelper')} />
+        <StatCard label={t('admin.topics')} value="0" helper={t('admin.topicsHelper')} />
+        <StatCard
+          label={t('admin.activityLogs')}
+          value="0"
+          helper={t('admin.activityLogsHelper')}
+        />
+        <StatCard label={t('admin.admins')} value="1" helper={t('admin.adminsHelper')} />
       </section>
 
       <Card>
         <div className="card-title-row">
-          <h2>Admin permissions</h2>
+          <h2>{t('admin.permissions')}</h2>
           <Badge variant="danger">ADMIN</Badge>
         </div>
-        <p className="muted-text">
-          This section will show users, topics and activity logs after admin endpoints are connected.
-        </p>
+        <p className="muted-text">{t('admin.permissionsDescription')}</p>
       </Card>
     </div>
   );
