@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout.jsx';
+import ProtectedRoute from './components/routes/ProtectedRoute.jsx';
 import LandingPage from './pages/LandingPage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
@@ -21,16 +22,20 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        <Route path="/dashboard" element={<StudentDashboardPage />} />
-        <Route path="/topics/create" element={<CreateTopicPage />} />
-        <Route path="/topics/:id" element={<TopicDetailsPage />} />
-        <Route path="/topics/:id/quiz" element={<QuizPage />} />
-        <Route path="/statistics" element={<StatisticsPage />} />
+        <Route element={<ProtectedRoute allowedRoles={['STUDENT', 'ADMIN']} />}>
+          <Route path="/dashboard" element={<StudentDashboardPage />} />
+          <Route path="/topics/create" element={<CreateTopicPage />} />
+          <Route path="/topics/:id" element={<TopicDetailsPage />} />
+          <Route path="/topics/:id/quiz" element={<QuizPage />} />
+          <Route path="/statistics" element={<StatisticsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Route>
 
-        <Route path="/admin" element={<AdminDashboardPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
+        <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+          <Route path="/admin" element={<AdminDashboardPage />} />
+        </Route>
+
         <Route path="/offline" element={<OfflinePage />} />
-
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

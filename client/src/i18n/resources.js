@@ -40,7 +40,14 @@ export const resources = {
         name: 'Име',
         title: 'Заглавие',
         topicLanguage: 'Език на темата',
-        studyText: 'Учебен текст'
+        studyText: 'Учебен текст',
+        logout: 'Изход',
+        loading: 'Зареждане...',
+        open: 'Отвори',
+        save: 'Запази',
+        archive: 'Архивирай',
+        delete: 'Изтрий',
+        createdAt: 'Създадено на',
       },
       landing: {
         eyebrow: 'Университетски практически проект',
@@ -84,7 +91,9 @@ export const resources = {
         admin: 'Админ',
         yourName: 'Твоето име',
         emailPlaceholder: 'you@example.com',
-        passwordPlaceholder: 'Минимум 6 символа'
+        passwordPlaceholder: 'Минимум 6 символа',
+        noAccount: 'Нямаш акаунт?',
+        hasAccount: 'Вече имаш акаунт?',
       },
       student: {
         dashboardEyebrow: 'Студентска зона',
@@ -131,7 +140,12 @@ export const resources = {
         archivedTopics: 'Архивирани теми',
         archivedTopicsHelper: 'Скрити от активния списък',
         chartsArea: 'Зона за графики',
-        chartsPlaceholder: 'Тук ще добавим Chart.js или Recharts визуализация.'
+        chartsPlaceholder: 'Тук ще добавим Chart.js или Recharts визуализация.',
+        noText: 'Няма въведен текст.',
+        finalTextPlaceholder: 'Тук можеш да въведеш финалния редактиран текст.',
+        topicSaved: 'Темата е запазена успешно.',
+        topicArchived: 'Темата е архивирана успешно.',
+        deleteConfirm: 'Сигурен ли си, че искаш да изтриеш тази тема?',
       },
       admin: {
         eyebrow: 'Админ панел',
@@ -166,6 +180,7 @@ export const resources = {
         title: 'Страницата не е намерена',
         description: 'Страницата, която търсиш, не съществува.'
       }
+      
     }
   },
   en: {
@@ -209,7 +224,14 @@ export const resources = {
         name: 'Name',
         title: 'Title',
         topicLanguage: 'Topic language',
-        studyText: 'Study text'
+        studyText: 'Study text',
+        logout: 'Logout',
+        loading: 'Loading...',
+        open: 'Open',
+        save: 'Save',
+        archive: 'Archive',
+        delete: 'Delete',
+        createdAt: 'Created at',
       },
       landing: {
         eyebrow: 'University practical project',
@@ -253,7 +275,9 @@ export const resources = {
         admin: 'Admin',
         yourName: 'Your name',
         emailPlaceholder: 'you@example.com',
-        passwordPlaceholder: 'Minimum 6 characters'
+        passwordPlaceholder: 'Minimum 6 characters',
+        noAccount: 'Do not have an account?',
+        hasAccount: 'Already have an account?',
       },
       student: {
         dashboardEyebrow: 'Student area',
@@ -300,7 +324,12 @@ export const resources = {
         archivedTopics: 'Archived topics',
         archivedTopicsHelper: 'Hidden from active list',
         chartsArea: 'Charts area',
-        chartsPlaceholder: 'Chart.js or Recharts visualization will be added here.'
+        chartsPlaceholder: 'Chart.js or Recharts visualization will be added here.',
+        noText: 'No text was added.',
+        finalTextPlaceholder: 'You can enter the final edited text here.',
+        topicSaved: 'Topic saved successfully.',
+        topicArchived: 'Topic archived successfully.',
+        deleteConfirm: 'Are you sure you want to delete this topic?',
       },
       admin: {
         eyebrow: 'Admin panel',

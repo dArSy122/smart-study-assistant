@@ -3,9 +3,11 @@ import Badge from '../../components/ui/Badge.jsx';
 import Card from '../../components/ui/Card.jsx';
 import PageHeader from '../../components/ui/PageHeader.jsx';
 import StatCard from '../../components/ui/StatCard.jsx';
+import { useAuth } from '../../hooks/useAuth.js';
 
 export default function AdminDashboardPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   return (
     <div className="content-stack">
@@ -19,7 +21,7 @@ export default function AdminDashboardPage() {
           value="0"
           helper={t('admin.activityLogsHelper')}
         />
-        <StatCard label={t('admin.admins')} value="1" helper={t('admin.adminsHelper')} />
+        <StatCard label={t('admin.admins')} value={user?.role === 'ADMIN' ? '1' : '0'} helper={t('admin.adminsHelper')} />
       </section>
 
       <Card>
