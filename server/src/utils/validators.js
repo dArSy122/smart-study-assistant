@@ -50,3 +50,12 @@ export const updateFolderSchema = z.object({
 export const folderIdSchema = z.object({
   id: z.coerce.number().int('Folder id must be an integer').positive('Folder id must be positive')
 });
+
+export const submitQuizAttemptSchema = z.object({
+  answers: z.array(
+    z.object({
+      questionIndex: z.coerce.number().int().min(0),
+      selectedAnswerIndex: z.coerce.number().int().min(0).max(3)
+    })
+  ).min(1, 'At least one answer is required')
+});

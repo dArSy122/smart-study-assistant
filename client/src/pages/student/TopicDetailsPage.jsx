@@ -39,6 +39,7 @@ export default function TopicDetailsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isFoldersLoading, setIsFoldersLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [aiProvider, setAiProvider] = useState('');
 
   useEffect(() => {
     async function loadTopicAndFolders() {
@@ -127,6 +128,7 @@ export default function TopicDetailsPage() {
 
       const response = await generateAiForTopic(id);
       const updatedTopic = response.data.topic;
+      setAiProvider(response.data.provider || '');
 
       setTopic(updatedTopic);
       setFormData((currentData) => ({
@@ -318,7 +320,7 @@ export default function TopicDetailsPage() {
         <Card>
           <div className="card-title-row">
             <h2>{t('ai.title')}</h2>
-            <Badge variant="primary">AI</Badge>
+            <Badge variant="primary">{aiProvider || 'AI'}</Badge>
           </div>
 
           {!aiResult ? (

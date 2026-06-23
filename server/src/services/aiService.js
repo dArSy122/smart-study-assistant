@@ -1,169 +1,191 @@
 import OpenAI from 'openai';
 
-const hasOpenAiKey = Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.trim());
+const hasNvidiaKey = Boolean(process.env.NVIDIA_API_KEY && process.env.NVIDIA_API_KEY.trim());
 
-const openai = hasOpenAiKey
+const nvidia = hasNvidiaKey
   ? new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
+      apiKey: process.env.NVIDIA_API_KEY,
+      baseURL: process.env.NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1',
+      timeout: 60000,
+      maxRetries: 0
     })
   : null;
 
-function splitIntoSentences(text) {
+const NVIDIA_MODEL = process.env.NVIDIA_MODEL || 'google/gemma-4-31b-it';
+
+function normalizeStudyText(text) {
   return String(text || '')
-    .replace(/\s+/g, ' ')
-    .split(/[.!?]+/)
-    .map((sentence) => sentence.trim())
-    .filter(Boolean);
+    .replace(/\r/g, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/[^\S\r\n]+/g, ' ')
+    .trim();
 }
 
-function extractKeyTerms(text) {
-  const words = String(text || '')
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s-]/gu, ' ')
-    .split(/\s+/)
-    .filter((word) => word.length > 4);
+function cleanJsonText(content) {
+  const rawContent = String(content || '').trim();
 
-  const stopWords = new Set([
-    'които',
-    'това',
-    'като',
-    'след',
-    'може',
-    'трябва',
-    'where',
-    'which',
-    'there',
-    'their',
-    'about',
-    'because',
-    'study',
-    'topic'
-  ]);
+  const jsonBlockMatch = rawContent.match(/```(?:json)?\s*([\s\S]*?)```/i);
 
-  const frequency = new Map();
+  if (jsonBlockMatch?.[1]) {
+    return jsonBlockMatch[1].trim();
+  }
 
-  words.forEach((word) => {
-    if (!stopWords.has(word)) {
-      frequency.set(word, (frequency.get(word) || 0) + 1);
-    }
-  });
+  const firstBraceIndex = rawContent.indexOf('{');
+  const lastBraceIndex = rawContent.lastIndexOf('}');
 
-  return [...frequency.entries()]
-    .sort((first, second) => second[1] - first[1])
-    .slice(0, 8)
-    .map(([term]) => ({
-      term,
-      definition: `Important concept found in the study text: ${term}`
-    }));
+  if (firstBraceIndex !== -1 && lastBraceIndex !== -1 && lastBraceIndex > firstBraceIndex) {
+    return rawContent.slice(firstBraceIndex, lastBraceIndex + 1).trim();
+  }
+
+  return rawContent;
 }
 
-function createFallbackQuiz(sentences, language) {
-  const isBulgarian = language === 'BG';
+function safeJsonParse(content) {
+  try {
+    return JSON.parse(cleanJsonText(content));
+  } catch (error) {
+    console.error('Failed to parse NVIDIA JSON response:', {
+      message: error.message,
+      rawContentPreview: String(content || '').slice(0, 1200)
+    });
 
-  const questionsSource = sentences.length > 0 ? sentences : [
-    isBulgarian ? 'Учебният материал трябва да бъде прочетен внимателно.' : 'The study material should be read carefully.'
-  ];
-
-  return questionsSource.slice(0, 5).map((sentence, index) => ({
-    question: isBulgarian
-      ? `Кое твърдение е свързано с материала?`
-      : `Which statement is related to the study material?`,
-    options: [
-      sentence,
-      isBulgarian ? 'Това твърдение не е свързано с темата.' : 'This statement is not related to the topic.',
-      isBulgarian ? 'Това е случаен отговор.' : 'This is a random answer.',
-      isBulgarian ? 'Няма достатъчно информация.' : 'There is not enough information.'
-    ],
-    correctAnswerIndex: 0,
-    explanation: isBulgarian
-      ? `Отговорът се намира в текста на темата.`
-      : `The answer is based on the topic text.`,
-    order: index + 1
-  }));
+    throw new Error('AI provider returned invalid JSON.');
+  }
 }
 
-function createFallbackAiMaterials({ title, text, language }) {
-  const isBulgarian = language === 'BG';
-  const sentences = splitIntoSentences(text);
-  const summarySentences = sentences.slice(0, 4);
+function validateAiMaterials(materials) {
+  const summary = String(materials?.summary || '').trim();
 
-  const summary = summarySentences.length > 0
-    ? summarySentences.join('. ') + '.'
-    : isBulgarian
-      ? `Темата "${title}" съдържа учебен материал, който трябва да бъде прегледан и обобщен.`
-      : `The topic "${title}" contains study material that should be reviewed and summarized.`;
+  const keyTerms = Array.isArray(materials?.keyTerms)
+    ? materials.keyTerms
+        .filter((item) => item?.term && item?.definition)
+        .map((item) => ({
+          term: String(item.term).trim(),
+          definition: String(item.definition).trim()
+        }))
+        .slice(0, 12)
+    : [];
 
-  const keyTerms = extractKeyTerms(text);
+  const studyPlan = Array.isArray(materials?.studyPlan)
+    ? materials.studyPlan
+        .filter((item) => item?.title && item?.description)
+        .map((item, index) => ({
+          step: Number(item.step) || index + 1,
+          title: String(item.title).trim(),
+          description: String(item.description).trim()
+        }))
+        .slice(0, 6)
+    : [];
 
-  const fallbackKeyTerms = keyTerms.length > 0
-    ? keyTerms
-    : [
-        {
-          term: isBulgarian ? 'Основна идея' : 'Main idea',
-          definition: isBulgarian ? 'Централното понятие в учебния материал.' : 'The central concept in the study material.'
-        }
-      ];
+  const flashcards = Array.isArray(materials?.flashcards)
+    ? materials.flashcards
+        .filter((item) => item?.front && item?.back)
+        .map((item, index) => ({
+          front: String(item.front).trim(),
+          back: String(item.back).trim(),
+          order: Number(item.order) || index + 1
+        }))
+        .slice(0, 12)
+    : [];
 
-  const studyPlan = [
-    {
-      step: 1,
-      title: isBulgarian ? 'Прочит на материала' : 'Read the material',
-      description: isBulgarian ? 'Прочети темата внимателно и маркирай важните части.' : 'Read the topic carefully and mark the important parts.'
-    },
-    {
-      step: 2,
-      title: isBulgarian ? 'Преговор на понятията' : 'Review key terms',
-      description: isBulgarian ? 'Запомни основните понятия и връзките между тях.' : 'Study the key terms and the connections between them.'
-    },
-    {
-      step: 3,
-      title: isBulgarian ? 'Самопроверка' : 'Self-check',
-      description: isBulgarian ? 'Реши теста и провери слабите места.' : 'Take the quiz and identify weak points.'
-    }
-  ];
+  const quiz = Array.isArray(materials?.quiz)
+    ? materials.quiz
+        .filter((item) => {
+          const hasQuestion = Boolean(item?.question);
+          const hasOptions = Array.isArray(item?.options) && item.options.length === 4;
+          const correctAnswerIndex = Number(item?.correctAnswerIndex);
+          const hasValidCorrectIndex = Number.isInteger(correctAnswerIndex)
+            && correctAnswerIndex >= 0
+            && correctAnswerIndex <= 3;
 
-  const flashcards = fallbackKeyTerms.slice(0, 8).map((item, index) => ({
-    front: item.term,
-    back: item.definition,
-    order: index + 1
-  }));
+          return hasQuestion && hasOptions && hasValidCorrectIndex;
+        })
+        .map((item, index) => ({
+          question: String(item.question).trim(),
+          options: item.options.map((option) => String(option).trim()),
+          correctAnswerIndex: Number(item.correctAnswerIndex),
+          explanation: String(item.explanation || '').trim(),
+          order: Number(item.order) || index + 1
+        }))
+        .slice(0, 8)
+    : [];
 
-  const quiz = createFallbackQuiz(sentences, language);
+  if (!summary) {
+    throw new Error('AI response is missing summary.');
+  }
+
+  if (keyTerms.length < 5) {
+    throw new Error('AI response does not contain enough key terms.');
+  }
+
+  if (studyPlan.length < 3) {
+    throw new Error('AI response does not contain enough study plan steps.');
+  }
+
+  if (flashcards.length < 5) {
+    throw new Error('AI response does not contain enough flashcards.');
+  }
+
+  if (quiz.length < 5) {
+    throw new Error('AI response does not contain enough quiz questions.');
+  }
 
   return {
     summary,
-    keyTerms: fallbackKeyTerms,
+    keyTerms,
     studyPlan,
     flashcards,
     quiz
   };
 }
 
-function safeJsonParse(content) {
-  const cleanedContent = String(content || '')
-    .replace(/```json/g, '')
-    .replace(/```/g, '')
-    .trim();
+function validateQuizOnlyMaterials(materials) {
+  const quiz = Array.isArray(materials?.quiz)
+    ? materials.quiz
+        .filter((item) => {
+          const hasQuestion = Boolean(item?.question);
+          const hasOptions = Array.isArray(item?.options) && item.options.length === 4;
+          const correctAnswerIndex = Number(item?.correctAnswerIndex);
+          const hasValidCorrectIndex = Number.isInteger(correctAnswerIndex)
+            && correctAnswerIndex >= 0
+            && correctAnswerIndex <= 3;
 
-  return JSON.parse(cleanedContent);
+          return hasQuestion && hasOptions && hasValidCorrectIndex;
+        })
+        .map((item, index) => ({
+          question: String(item.question).trim(),
+          options: item.options.map((option) => String(option).trim()),
+          correctAnswerIndex: Number(item.correctAnswerIndex),
+          explanation: String(item.explanation || '').trim(),
+          order: Number(item.order) || index + 1
+        }))
+        .slice(0, 8)
+    : [];
+
+  if (quiz.length < 5) {
+    throw new Error('AI response does not contain enough quiz questions.');
+  }
+
+  return quiz;
 }
 
-export async function generateAiMaterials({ title, text, language }) {
-  const safeText = String(text || '').trim();
-
-  if (!safeText) {
-    throw new Error('Topic text is required for AI generation.');
-  }
-
-  if (!openai) {
-    return createFallbackAiMaterials({ title, text: safeText, language });
-  }
-
+function buildEducationalPrompt({ title, text, language }) {
   const responseLanguage = language === 'BG' ? 'Bulgarian' : 'English';
 
-  const prompt = `
-You are an educational assistant. Generate study materials in ${responseLanguage}.
-Return ONLY valid JSON. No markdown.
+  return `
+You are a university-level educational assistant inside a Smart Study Assistant web app.
+
+Your task:
+Generate high-quality study materials from the provided study text.
+
+Output language:
+All user-facing content must be in ${responseLanguage}.
+
+You must return ONLY valid JSON.
+Do not use markdown.
+Do not wrap the response in code fences.
+Do not add explanations outside the JSON.
 
 Required JSON structure:
 {
@@ -188,46 +210,181 @@ Required JSON structure:
   ]
 }
 
-Rules:
-- Make the summary clear and useful.
-- Generate 6 to 10 key terms.
-- Generate 3 to 5 study plan steps.
-- Generate 6 to 10 flashcards.
-- Generate 5 quiz questions.
-- correctAnswerIndex must be 0, 1, 2 or 3.
-- The quiz must be answerable from the provided text.
+Quality requirements:
+1. The summary must be educational, structured and useful for exam preparation.
+2. Do not copy random fragments as the summary.
+3. Explain the topic clearly.
+4. Generate 6 to 12 real key terms from the text.
+5. Key term definitions must explain the terms in context.
+6. Generate 3 to 6 practical study plan steps.
+7. Generate 6 to 12 flashcards.
+8. Generate 5 to 8 quiz questions.
+9. Quiz questions must test understanding, not simple word matching.
+10. Every quiz question must have exactly 4 options.
+11. Only one option must be correct.
+12. correctAnswerIndex must be 0, 1, 2 or 3.
+13. Distractors must be plausible but clearly wrong.
+14. Explanations must explain why the correct answer is correct.
+15. Use only the provided text. Do not invent unsupported facts.
+16. If the text contains OCR mistakes, infer carefully without hallucinating.
 
 Topic title:
 ${title}
 
 Study text:
-${safeText.slice(0, 12000)}
+${text.slice(0, 24000)}
 `;
+}
+
+function buildDifferentQuizPrompt({ title, text, language, previousQuiz }) {
+  const responseLanguage = language === 'BG' ? 'Bulgarian' : 'English';
+
+  const previousQuestions = previousQuiz
+    .map((question) => question.question)
+    .filter(Boolean)
+    .slice(0, 20)
+    .join('\n- ');
+
+  return `
+You are a university-level educational quiz generator inside a Smart Study Assistant web app.
+
+Your task:
+Generate a NEW and DIFFERENT quiz from the provided study text.
+
+Output language:
+All user-facing content must be in ${responseLanguage}.
+
+You must return ONLY valid JSON.
+Do not use markdown.
+Do not wrap the response in code fences.
+Do not add explanations outside the JSON.
+
+Required JSON structure:
+{
+  "quiz": [
+    {
+      "question": "string",
+      "options": ["string", "string", "string", "string"],
+      "correctAnswerIndex": 0,
+      "explanation": "string",
+      "order": 1
+    }
+  ]
+}
+
+Quality requirements:
+1. Generate 5 to 8 questions.
+2. Do not repeat previous questions.
+3. Test understanding, not simple word matching.
+4. Every question must have exactly 4 options.
+5. Only one option must be correct.
+6. correctAnswerIndex must be 0, 1, 2 or 3.
+7. Distractors must be plausible but wrong.
+8. Every explanation must explain why the correct answer is correct.
+9. Use only the provided text. Do not invent unsupported facts.
+10. Make the new quiz different in wording, focus and answer choices.
+
+Previous questions that must NOT be repeated:
+- ${previousQuestions || 'No previous questions.'}
+
+Topic title:
+${title}
+
+Study text:
+${text.slice(0, 24000)}
+`;
+}
+
+async function callNvidiaJson(prompt, maxTokens = 4096, temperature = 0.25) {
+  if (!nvidia) {
+    throw new Error('NVIDIA_API_KEY is missing. Add it to server/.env and restart the backend.');
+  }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      temperature: 0.4
-    });
+    const completion = await nvidia.chat.completions.create(
+      {
+        model: NVIDIA_MODEL,
+        messages: [
+          {
+            role: 'user',
+            content: `
+You are a strict educational assistant.
+
+Critical response rules:
+- Return only valid JSON.
+- Do not use markdown.
+- Do not wrap the response in code fences.
+- Do not add explanations outside the JSON.
+- All generated educational content must follow the requested output language.
+
+${prompt}
+`
+          }
+        ],
+        temperature,
+        top_p: 0.9,
+        max_tokens: maxTokens
+      },
+      {
+        timeout: 180000
+      }
+    );
 
     const content = completion.choices[0]?.message?.content;
-    const parsed = safeJsonParse(content);
 
-    return {
-      summary: parsed.summary || '',
-      keyTerms: Array.isArray(parsed.keyTerms) ? parsed.keyTerms : [],
-      studyPlan: Array.isArray(parsed.studyPlan) ? parsed.studyPlan : [],
-      flashcards: Array.isArray(parsed.flashcards) ? parsed.flashcards : [],
-      quiz: Array.isArray(parsed.quiz) ? parsed.quiz : []
-    };
+    if (!content) {
+      throw new Error('NVIDIA returned an empty response.');
+    }
+
+    return safeJsonParse(content);
   } catch (error) {
-    console.warn('OpenAI generation failed. Using fallback AI generator.');
-    return createFallbackAiMaterials({ title, text: safeText, language });
+    console.error('NVIDIA NIM request failed:', {
+      message: error.message,
+      status: error.status,
+      code: error.code,
+      response: error.response?.data
+    });
+
+    throw error;
   }
+}
+
+export async function generateAiMaterials({ title, text, language }) {
+  const safeText = normalizeStudyText(text);
+
+  if (!safeText || safeText.length < 20) {
+    throw new Error('Topic text is required for AI generation.');
+  }
+
+  const prompt = buildEducationalPrompt({
+    title,
+    text: safeText,
+    language
+  });
+
+  const parsed = await callNvidiaJson(prompt, 2500, 0.25);
+
+  return {
+    ...validateAiMaterials(parsed),
+    provider: 'NVIDIA NIM'
+  };
+}
+
+export async function generateDifferentQuizForTopic({ title, text, language, previousQuiz = [] }) {
+  const safeText = normalizeStudyText(text);
+
+  if (!safeText || safeText.length < 20) {
+    throw new Error('Topic text is required for quiz generation.');
+  }
+
+  const prompt = buildDifferentQuizPrompt({
+    title,
+    text: safeText,
+    language,
+    previousQuiz
+  });
+
+  const parsed = await callNvidiaJson(prompt, 1800, 0.55);
+
+  return validateQuizOnlyMaterials(parsed);
 }

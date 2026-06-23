@@ -111,8 +111,9 @@ export async function generateAiForTopic(req, res, next) {
     });
 
     return successResponse(res, 'AI materials generated successfully', {
-      aiResult,
-      topic: updatedTopic
+        aiResult,
+        topic: updatedTopic,
+        provider: materials.provider
     });
   } catch (error) {
     next(error);

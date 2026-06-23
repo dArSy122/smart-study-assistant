@@ -16,6 +16,7 @@ import NotFoundPage from './pages/NotFoundPage.jsx';
 import LibraryPage from './pages/student/LibraryPage.jsx';
 import FolderDetailsPage from './pages/student/FolderDetailsPage.jsx';
 import ArchivedTopicsPage from './pages/student/ArchivedTopicsPage.jsx';
+import QuizAttemptsPage from './pages/student/QuizAttemptsPage.jsx';
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/library/folders/:id" element={<FolderDetailsPage />} />
           <Route path="/library/archive" element={<ArchivedTopicsPage />} />
+          <Route path="/topics/:id/quiz/history" element={<QuizAttemptsPage />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
