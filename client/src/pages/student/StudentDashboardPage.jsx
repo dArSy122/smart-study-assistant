@@ -96,7 +96,9 @@ export default function StudentDashboardPage() {
                       {topic.status}
                     </Badge>
                   </div>
-                  <p>{topic.finalText || topic.originalText || t('student.noText')}</p>
+                  <p className="topic-preview">
+                    {topic.finalText || topic.ocrText || topic.originalText || t('student.noText')}
+                  </p>
                 </div>
 
                 <Button to={`/topics/${topic.id}`} variant="secondary">

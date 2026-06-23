@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import StudyFileImporter from '../../components/forms/StudyFileImporter.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import FormField from '../../components/ui/FormField.jsx';
@@ -15,6 +16,7 @@ export default function CreateTopicPage() {
     title: '',
     language: 'BG',
     originalText: '',
+    ocrText: '',
     finalText: ''
   });
 
@@ -30,6 +32,14 @@ export default function CreateTopicPage() {
     }));
   }
 
+  function handleExtractedText(extractedText) {
+    setFormData((currentData) => ({
+      ...currentData,
+      ocrText: extractedText,
+      finalText: currentData.finalText || extractedText
+    }));
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -39,7 +49,7 @@ export default function CreateTopicPage() {
     try {
       const response = await createTopic({
         ...formData,
-        finalText: formData.finalText || formData.originalText
+        finalText: formData.finalText || formData.originalText || formData.ocrText
       });
 
       navigate(`/topics/${response.data.topic.id}`);
@@ -78,14 +88,32 @@ export default function CreateTopicPage() {
           </select>
         </label>
 
+        <StudyFileImporter
+          language={formData.language}
+          onTextExtracted={handleExtractedText}
+          disabled={isLoading}
+        />
+
         <label className="form-field" htmlFor="originalText">
           <span>{t('common.studyText')}</span>
           <textarea
             id="originalText"
             name="originalText"
-            rows="8"
+            rows="7"
             placeholder={t('student.studyTextPlaceholder')}
             value={formData.originalText}
+            onChange={handleChange}
+          />
+        </label>
+
+        <label className="form-field" htmlFor="ocrText">
+          <span>{t('fileImport.extractedText')}</span>
+          <textarea
+            id="ocrText"
+            name="ocrText"
+            rows="7"
+            placeholder={t('fileImport.extractedTextPlaceholder')}
+            value={formData.ocrText}
             onChange={handleChange}
           />
         </label>

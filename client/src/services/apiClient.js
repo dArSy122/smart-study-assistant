@@ -15,9 +15,10 @@ export function removeStoredToken() {
 
 export async function apiRequest(path, options = {}) {
   const token = getStoredToken();
+  const isFormData = options.body instanceof FormData;
 
   const headers = {
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...(options.auth && token ? { Authorization: `Bearer ${token}` } : {}),
     ...(options.headers || {})
   };
@@ -27,14 +28,13 @@ export async function apiRequest(path, options = {}) {
     headers
   };
 
-  if (options.body && typeof options.body === 'object') {
+  if (options.body && typeof options.body === 'object' && !isFormData) {
     requestOptions.body = JSON.stringify(options.body);
   }
 
   delete requestOptions.auth;
 
   const response = await fetch(`${API_URL}${path}`, requestOptions);
-
   const data = await response.json();
 
   if (!response.ok) {

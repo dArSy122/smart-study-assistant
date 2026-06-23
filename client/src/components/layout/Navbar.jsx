@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth.js';
 import LanguageSwitcher from '../ui/LanguageSwitcher.jsx';
@@ -39,13 +39,13 @@ export default function Navbar() {
           <ThemeToggle />
 
           {isAuthenticated ? (
-            <button type="button" className="button button-secondary button-small" onClick={handleLogout}>
+            <button type="button" className="button button-secondary button-size-small" onClick={handleLogout}>
               {t('common.logout')}
             </button>
           ) : (
-            <NavLink to="/login" className="button button-primary button-small">
+            <Link to="/login" className="button button-primary button-size-small">
               {t('nav.login')}
-            </NavLink>
+            </Link>
           )}
         </div>
       </nav>

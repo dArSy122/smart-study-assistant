@@ -9,7 +9,7 @@ export default function Button({
   className = '',
   ...props
 }) {
-  const classes = `button button-${variant} button-${size} ${className}`.trim();
+  const classes = `button button-${variant} button-size-${size} ${className}`.trim();
 
   if (to) {
     return (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
+import StudyFileImporter from '../../components/forms/StudyFileImporter.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
@@ -63,6 +64,14 @@ export default function TopicDetailsPage() {
     setFormData((currentData) => ({
       ...currentData,
       [name]: value
+    }));
+  }
+
+  function handleExtractedText(extractedText) {
+    setFormData((currentData) => ({
+      ...currentData,
+      ocrText: extractedText,
+      finalText: currentData.finalText || extractedText
     }));
   }
 
@@ -192,6 +201,12 @@ export default function TopicDetailsPage() {
               </select>
             </label>
 
+            <StudyFileImporter
+              language={formData.language}
+              onTextExtracted={handleExtractedText}
+              disabled={isSaving}
+            />
+
             <label className="form-field" htmlFor="originalText">
               <span>{t('common.studyText')}</span>
               <textarea
@@ -199,6 +214,17 @@ export default function TopicDetailsPage() {
                 name="originalText"
                 rows="6"
                 value={formData.originalText}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label className="form-field" htmlFor="ocrText">
+              <span>{t('fileImport.extractedText')}</span>
+              <textarea
+                id="ocrText"
+                name="ocrText"
+                rows="6"
+                value={formData.ocrText}
                 onChange={handleChange}
               />
             </label>
