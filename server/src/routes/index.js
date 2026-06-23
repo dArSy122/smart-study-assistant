@@ -1,4 +1,5 @@
 import express from 'express';
+import aiRoutes from './aiRoutes.js';
 import authRoutes from './authRoutes.js';
 import fileRoutes from './fileRoutes.js';
 import folderRoutes from './folderRoutes.js';
@@ -12,5 +13,6 @@ router.use('/auth', authRoutes);
 router.use('/topics', topicRoutes);
 router.use('/files', fileRoutes);
 router.use('/folders', folderRoutes);
+router.use('/ai', aiRoutes);
 
 export default router;

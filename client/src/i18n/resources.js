@@ -225,6 +225,19 @@ export const resources = {
         restore: 'Възстанови',
         noFolder: 'Без папка',
       },
+      ai: {
+        title: 'AI учебни материали',
+        generate: 'Генерирай AI материали',
+        generating: 'Генериране...',
+        generatedSuccessfully: 'AI материалите са генерирани успешно.',
+        empty: 'Все още няма генерирани AI материали за тази тема.',
+        summary: 'Обобщение',
+        keyTerms: 'Важни понятия',
+        studyPlan: 'Учебен план',
+        flashcards: 'Флашкарти',
+        quiz: 'Тест',
+        quizQuestions: 'въпроса'
+      },
       settings: {
         eyebrow: 'Предпочитания',
         title: 'Настройки',
@@ -470,6 +483,19 @@ export const resources = {
         noArchivedTopics: 'There are no archived topics.',
         restore: 'Restore',
         noFolder: 'No folder',
+      },
+      ai: {
+        title: 'AI study materials',
+        generate: 'Generate AI materials',
+        generating: 'Generating...',
+        generatedSuccessfully: 'AI materials generated successfully.',
+        empty: 'There are no AI materials generated for this topic yet.',
+        summary: 'Summary',
+        keyTerms: 'Key terms',
+        studyPlan: 'Study plan',
+        flashcards: 'Flashcards',
+        quiz: 'Quiz',
+        quizQuestions: 'questions'
       },
       settings: {
         eyebrow: 'Preferences',

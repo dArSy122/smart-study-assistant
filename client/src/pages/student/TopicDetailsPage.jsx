@@ -6,6 +6,7 @@ import Badge from '../../components/ui/Badge.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import PageHeader from '../../components/ui/PageHeader.jsx';
+import { generateAiForTopic } from '../../services/aiService.js';
 import { getFolders } from '../../services/folderService.js';
 import {
   archiveTopic,
@@ -37,6 +38,7 @@ export default function TopicDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isFoldersLoading, setIsFoldersLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     async function loadTopicAndFolders() {
@@ -89,28 +91,56 @@ export default function TopicDetailsPage() {
   }
 
   async function handleSave(event) {
-  event.preventDefault();
+    event.preventDefault();
 
-  setError('');
-  setMessage('');
-  setIsSaving(true);
+    setError('');
+    setMessage('');
+    setIsSaving(true);
 
-  try {
-    await updateTopic(id, {
-      ...formData,
-      folderId: formData.folderId ? Number(formData.folderId) : null
-    });
+    try {
+      await updateTopic(id, {
+        ...formData,
+        folderId: formData.folderId ? Number(formData.folderId) : null
+      });
 
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/library');
+      if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate('/library');
+      }
+    } catch (requestError) {
+      setError(requestError.message);
+      setIsSaving(false);
     }
-  } catch (requestError) {
-    setError(requestError.message);
-    setIsSaving(false);
   }
-}
+
+  async function handleGenerateAi() {
+    setError('');
+    setMessage('');
+    setIsGenerating(true);
+
+    try {
+      await updateTopic(id, {
+        ...formData,
+        folderId: formData.folderId ? Number(formData.folderId) : null
+      });
+
+      const response = await generateAiForTopic(id);
+      const updatedTopic = response.data.topic;
+
+      setTopic(updatedTopic);
+      setFormData((currentData) => ({
+        ...currentData,
+        status: updatedTopic.status || 'GENERATED'
+      }));
+
+      setMessage(t('ai.generatedSuccessfully'));
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setIsGenerating(false);
+    }
+  }
 
   async function handleArchive() {
     setError('');
@@ -148,6 +178,8 @@ export default function TopicDetailsPage() {
     }
   }
 
+  const aiResult = topic?.aiResult;
+
   if (isLoading) {
     return (
       <Card>
@@ -176,6 +208,9 @@ export default function TopicDetailsPage() {
         description={t('student.topicDetailsDescription')}
         actions={
           <div className="page-actions">
+            <Button type="button" onClick={handleGenerateAi} disabled={isGenerating}>
+              {isGenerating ? t('ai.generating') : t('ai.generate')}
+            </Button>
             <Button to={`/topics/${id}/quiz`}>{t('common.startQuiz')}</Button>
             <Button type="button" variant="secondary" onClick={handleArchive}>
               {t('common.archive')}
@@ -282,16 +317,61 @@ export default function TopicDetailsPage() {
 
         <Card>
           <div className="card-title-row">
-            <h2>{t('student.aiSummary')}</h2>
+            <h2>{t('ai.title')}</h2>
             <Badge variant="primary">AI</Badge>
           </div>
 
-          {topic.aiResult ? (
-            <div className="ai-preview">
-              <p>{topic.aiResult.summary}</p>
-            </div>
+          {!aiResult ? (
+            <p className="muted-text">{t('ai.empty')}</p>
           ) : (
-            <p className="muted-text">{t('student.aiSummaryEmpty')}</p>
+            <div className="ai-result-stack">
+              <section>
+                <h3>{t('ai.summary')}</h3>
+                <p>{aiResult.summary}</p>
+              </section>
+
+              <section>
+                <h3>{t('ai.keyTerms')}</h3>
+                <div className="ai-chip-list">
+                  {(aiResult.keyTerms || []).map((item, index) => (
+                    <span className="ai-chip" key={`${item.term}-${index}`}>
+                      {item.term}
+                    </span>
+                  ))}
+                </div>
+              </section>
+
+              <section>
+                <h3>{t('ai.studyPlan')}</h3>
+                <ol className="ai-list">
+                  {(aiResult.studyPlan || []).map((item, index) => (
+                    <li key={`${item.title}-${index}`}>
+                      <strong>{item.title}</strong>
+                      <span>{item.description}</span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+
+              <section>
+                <h3>{t('ai.flashcards')}</h3>
+                <div className="flashcard-preview-grid">
+                  {(aiResult.flashcardsJson || []).slice(0, 4).map((card, index) => (
+                    <div className="flashcard-preview" key={`${card.front}-${index}`}>
+                      <strong>{card.front}</strong>
+                      <span>{card.back}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <section>
+                <h3>{t('ai.quiz')}</h3>
+                <p className="muted-text">
+                  {(aiResult.quizJson || []).length} {t('ai.quizQuestions')}
+                </p>
+              </section>
+            </div>
           )}
 
           <div className="details-meta">
