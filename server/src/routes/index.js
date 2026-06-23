@@ -1,6 +1,7 @@
 import express from 'express';
 import authRoutes from './authRoutes.js';
 import fileRoutes from './fileRoutes.js';
+import folderRoutes from './folderRoutes.js';
 import healthRoutes from './healthRoutes.js';
 import topicRoutes from './topicRoutes.js';
 
@@ -10,5 +11,6 @@ router.use('/health', healthRoutes);
 router.use('/auth', authRoutes);
 router.use('/topics', topicRoutes);
 router.use('/files', fileRoutes);
+router.use('/folders', folderRoutes);
 
 export default router;

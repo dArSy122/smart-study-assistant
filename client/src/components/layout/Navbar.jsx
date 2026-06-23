@@ -26,6 +26,7 @@ export default function Navbar() {
           {isAuthenticated ? (
             <>
               <NavLink to="/dashboard">{t('nav.dashboard')}</NavLink>
+              <NavLink to="/library">{t('nav.library')}</NavLink>
               <NavLink to="/topics/create">{t('nav.createTopic')}</NavLink>
               <NavLink to="/statistics">{t('nav.statistics')}</NavLink>
 

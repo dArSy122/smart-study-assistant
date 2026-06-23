@@ -6,6 +6,7 @@ import Badge from '../../components/ui/Badge.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import PageHeader from '../../components/ui/PageHeader.jsx';
+import { getFolders } from '../../services/folderService.js';
 import {
   archiveTopic,
   deleteTopic,
@@ -19,9 +20,12 @@ export default function TopicDetailsPage() {
   const navigate = useNavigate();
 
   const [topic, setTopic] = useState(null);
+  const [folders, setFolders] = useState([]);
+
   const [formData, setFormData] = useState({
     title: '',
     language: 'BG',
+    folderId: '',
     originalText: '',
     ocrText: '',
     finalText: '',
@@ -32,17 +36,25 @@ export default function TopicDetailsPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isFoldersLoading, setIsFoldersLoading] = useState(true);
 
   useEffect(() => {
-    async function loadTopic() {
+    async function loadTopicAndFolders() {
       try {
-        const response = await getTopicById(id);
-        const loadedTopic = response.data.topic;
+        const [topicResponse, foldersResponse] = await Promise.all([
+          getTopicById(id),
+          getFolders()
+        ]);
+
+        const loadedTopic = topicResponse.data.topic;
 
         setTopic(loadedTopic);
+        setFolders(foldersResponse.data.folders);
+
         setFormData({
           title: loadedTopic.title || '',
           language: loadedTopic.language || 'BG',
+          folderId: loadedTopic.folderId ? String(loadedTopic.folderId) : '',
           originalText: loadedTopic.originalText || '',
           ocrText: loadedTopic.ocrText || '',
           finalText: loadedTopic.finalText || '',
@@ -52,10 +64,11 @@ export default function TopicDetailsPage() {
         setError(requestError.message);
       } finally {
         setIsLoading(false);
+        setIsFoldersLoading(false);
       }
     }
 
-    loadTopic();
+    loadTopicAndFolders();
   }, [id]);
 
   function handleChange(event) {
@@ -76,23 +89,28 @@ export default function TopicDetailsPage() {
   }
 
   async function handleSave(event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    setError('');
-    setMessage('');
-    setIsSaving(true);
+  setError('');
+  setMessage('');
+  setIsSaving(true);
 
-    try {
-      const response = await updateTopic(id, formData);
+  try {
+    await updateTopic(id, {
+      ...formData,
+      folderId: formData.folderId ? Number(formData.folderId) : null
+    });
 
-      setTopic(response.data.topic);
-      setMessage(t('student.topicSaved'));
-    } catch (requestError) {
-      setError(requestError.message);
-    } finally {
-      setIsSaving(false);
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/library');
     }
+  } catch (requestError) {
+    setError(requestError.message);
+    setIsSaving(false);
   }
+}
 
   async function handleArchive() {
     setError('');
@@ -201,6 +219,24 @@ export default function TopicDetailsPage() {
               </select>
             </label>
 
+            <label className="form-field" htmlFor="folderId">
+              <span>{t('library.folder')}</span>
+              <select
+                id="folderId"
+                name="folderId"
+                value={formData.folderId}
+                onChange={handleChange}
+                disabled={isFoldersLoading || isSaving}
+              >
+                <option value="">{t('library.noFolder')}</option>
+                {folders.map((folder) => (
+                  <option key={folder.id} value={folder.id}>
+                    {folder.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
             <StudyFileImporter
               language={formData.language}
               onTextExtracted={handleExtractedText}
@@ -261,6 +297,7 @@ export default function TopicDetailsPage() {
           <div className="details-meta">
             <span>ID: {topic.id}</span>
             <span>{t('common.language')}: {topic.language}</span>
+            <span>{t('library.folder')}: {topic.folder?.name || t('library.noFolder')}</span>
             <span>{t('common.createdAt')}: {new Date(topic.createdAt).toLocaleString()}</span>
           </div>
         </Card>

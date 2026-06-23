@@ -1,7 +1,21 @@
 import { apiRequest } from './apiClient.js';
 
-export function getTopics() {
-  return apiRequest('/topics', {
+function buildQuery(params = {}) {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      searchParams.set(key, value);
+    }
+  });
+
+  const query = searchParams.toString();
+
+  return query ? `?${query}` : '';
+}
+
+export function getTopics(params = {}) {
+  return apiRequest(`/topics${buildQuery(params)}`, {
     method: 'GET',
     auth: true
   });
@@ -32,6 +46,13 @@ export function updateTopic(id, payload) {
 
 export function archiveTopic(id) {
   return apiRequest(`/topics/${id}/archive`, {
+    method: 'PATCH',
+    auth: true
+  });
+}
+
+export function restoreTopic(id) {
+  return apiRequest(`/topics/${id}/restore`, {
     method: 'PATCH',
     auth: true
   });

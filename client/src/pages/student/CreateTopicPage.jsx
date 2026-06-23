@@ -1,20 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import StudyFileImporter from '../../components/forms/StudyFileImporter.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 import FormField from '../../components/ui/FormField.jsx';
 import PageHeader from '../../components/ui/PageHeader.jsx';
+import { getFolders } from '../../services/folderService.js';
 import { createTopic } from '../../services/topicService.js';
 
 export default function CreateTopicPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
+  const initialFolderId = searchParams.get('folderId') || '';
+
+  const [folders, setFolders] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     language: 'BG',
+    folderId: initialFolderId,
     originalText: '',
     ocrText: '',
     finalText: ''
@@ -22,6 +28,22 @@ export default function CreateTopicPage() {
 
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isFoldersLoading, setIsFoldersLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadFolders() {
+      try {
+        const response = await getFolders();
+        setFolders(response.data.folders);
+      } catch (requestError) {
+        setError(requestError.message);
+      } finally {
+        setIsFoldersLoading(false);
+      }
+    }
+
+    loadFolders();
+  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -49,6 +71,7 @@ export default function CreateTopicPage() {
     try {
       const response = await createTopic({
         ...formData,
+        folderId: formData.folderId ? Number(formData.folderId) : null,
         finalText: formData.finalText || formData.originalText || formData.ocrText
       });
 
@@ -85,6 +108,24 @@ export default function CreateTopicPage() {
           <select id="language" name="language" value={formData.language} onChange={handleChange}>
             <option value="BG">{t('common.bulgarian')}</option>
             <option value="EN">{t('common.english')}</option>
+          </select>
+        </label>
+
+        <label className="form-field" htmlFor="folderId">
+          <span>{t('library.folder')}</span>
+          <select
+            id="folderId"
+            name="folderId"
+            value={formData.folderId}
+            onChange={handleChange}
+            disabled={isFoldersLoading}
+          >
+            <option value="">{t('library.noFolder')}</option>
+            {folders.map((folder) => (
+              <option key={folder.id} value={folder.id}>
+                {folder.name}
+              </option>
+            ))}
           </select>
         </label>
 

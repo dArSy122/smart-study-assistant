@@ -13,6 +13,9 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import OfflinePage from './pages/OfflinePage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
+import LibraryPage from './pages/student/LibraryPage.jsx';
+import FolderDetailsPage from './pages/student/FolderDetailsPage.jsx';
+import ArchivedTopicsPage from './pages/student/ArchivedTopicsPage.jsx';
 
 export default function App() {
   return (
@@ -29,6 +32,9 @@ export default function App() {
           <Route path="/topics/:id/quiz" element={<QuizPage />} />
           <Route path="/statistics" element={<StatisticsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/library" element={<LibraryPage />} />
+          <Route path="/library/folders/:id" element={<FolderDetailsPage />} />
+          <Route path="/library/archive" element={<ArchivedTopicsPage />} />
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>

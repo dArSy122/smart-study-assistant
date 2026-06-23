@@ -37,6 +37,7 @@ model User {
   quizAttempts           QuizAttempt[]
   notificationPreference NotificationPreference?
   activityLogs           ActivityLog[]
+  topicFolders           TopicFolder[]
 
   @@map("users")
 }
@@ -52,11 +53,14 @@ model StudyTopic {
   status       StudyTopicStatus @default(DRAFT)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
+  folderId     Int?
+  folder       TopicFolder?     @relation(fields: [folderId], references: [id], onDelete: SetNull)
 
   user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   aiResult     AIResult?
   quizAttempts QuizAttempt[]
 
+  @@index([folderId])
   @@index([userId])
   @@map("study_topics")
 }
@@ -118,4 +122,20 @@ model ActivityLog {
 
   @@index([userId])
   @@map("activity_logs")
+}
+
+model TopicFolder {
+  id          Int          @id @default(autoincrement())
+  userId      Int
+  name        String
+  description String?      @db.Text
+  color       String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topics      StudyTopic[]
+
+  @@index([userId])
+  @@map("topic_folders")
 }

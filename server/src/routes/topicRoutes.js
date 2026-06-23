@@ -5,6 +5,7 @@ import {
   deleteTopic,
   getTopicById,
   getTopics,
+  restoreTopic,
   updateTopic
 } from '../controllers/topicController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
@@ -19,5 +20,6 @@ router.get('/:id', getTopicById);
 router.put('/:id', updateTopic);
 router.delete('/:id', deleteTopic);
 router.patch('/:id/archive', archiveTopic);
+router.patch('/:id/restore', restoreTopic);
 
 export default router;
